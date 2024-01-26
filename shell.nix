@@ -11,29 +11,26 @@ let
     pyqtgraph
     matplotlib
     pandas
-    (scikit-learn.overridePythonAttrs (oldAttrs: rec {
-      version = "1.2.2";
-      pname = "scikit_learn";
-      format = "wheel";
-
-      src = pkgs.fetchPypi {
-        inherit pname version format;
-        dist = "cp310";
-        abi = "cp310";
-        python = "cp310";
-        platform = "manylinux_2_17_x86_64.manylinux2014_x86_64";
-        sha256 = "LiZCuqCtHo+BiJF0I91zmUvyVCn4iT3b4RW+PKMYNYQ=";
-      };
-
-      doCheck = false;
-    }))
+    # packages that need a specific version are pulled in with pip
   ]);
 in
 
 pkgs.mkShell {
   buildInputs = [
+    pkgs.python310
     pythonEnv
     pkgs.qt5.full
   ];
+
+  shellHook = ''
+    # Create a virtual environment
+    python3 -m venv venv
+
+    # Activate the virtual environment
+    source venv/bin/activate
+
+    # Install packages from requirements.txt
+    pip install -r requirements.txt
+  '';
 }
 
